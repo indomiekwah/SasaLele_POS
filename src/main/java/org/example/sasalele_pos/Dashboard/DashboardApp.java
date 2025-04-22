@@ -1,5 +1,6 @@
 package org.example.sasalele_pos.Dashboard;
 
+import org.example.sasalele_pos.Dashboard.Produk.ProdukPanel;
 import org.example.sasalele_pos.Dashboard.Transaksi.TransaksiPanel;
 import org.example.sasalele_pos.MainApp;
 import org.example.sasalele_pos.model.User;
@@ -87,7 +88,7 @@ public class DashboardApp extends JPanel {
 
         // Create panels for each section in the main frame
         TransaksiPanel transaksiPanel = new TransaksiPanel();
-        JPanel produkPanel = createProdukPanel();
+        ProdukPanel produkPanel = new ProdukPanel();
         JPanel akunPanel = createAkunPanel();
         JPanel logPanel = createLogPanel();
 

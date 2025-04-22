@@ -32,7 +32,6 @@ public class TransaksiPanel extends JPanel {
         // Right Panel
         JPanel rightPanel = new JPanel();
         rightPanel.setLayout(new BorderLayout());
-        rightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         centerLayout.add(rightPanel);
 
         // Right Top Panel
