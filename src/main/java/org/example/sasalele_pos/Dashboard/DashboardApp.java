@@ -1,5 +1,7 @@
 package org.example.sasalele_pos.Dashboard;
 
+import org.example.sasalele_pos.Dashboard.Akun.AkunPanel;
+import org.example.sasalele_pos.Dashboard.Log.LogPanel;
 import org.example.sasalele_pos.Dashboard.Produk.ProdukPanel;
 import org.example.sasalele_pos.Dashboard.Transaksi.TransaksiPanel;
 import org.example.sasalele_pos.MainApp;
@@ -89,8 +91,8 @@ public class DashboardApp extends JPanel {
         // Create panels for each section in the main frame
         TransaksiPanel transaksiPanel = new TransaksiPanel();
         ProdukPanel produkPanel = new ProdukPanel();
-        JPanel akunPanel = createAkunPanel();
-        JPanel logPanel = createLogPanel();
+        AkunPanel akunPanel = new AkunPanel();
+        LogPanel logPanel = new LogPanel();
 
         // Add all panels to the main panel (card layout)
         panel.add(transaksiPanel, "Transaksi");
@@ -100,24 +102,7 @@ public class DashboardApp extends JPanel {
 
         // Initially show Transaksi panel
         cardLayout.show(panel, "Transaksi");
-
-        return panel;
-    }
-
-    private JPanel createProdukPanel() {
-        JPanel panel = new JPanel();
-
-        return panel;
-    }
-
-    private JPanel createAkunPanel() {
-        JPanel panel = new JPanel();
-
-        return panel;
-    }
-
-    private JPanel createLogPanel() {
-        JPanel panel = new JPanel();
+        highlightButton("Transaksi");
 
         return panel;
     }

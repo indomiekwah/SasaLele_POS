@@ -145,8 +145,13 @@ public class TransaksiPanel extends JPanel {
                 {"3", "Product C", "20", "200.0"},
                 {"4", "Product D", "2", "120"}
         };
-        String[] rightTableColumns = {"Kode", "Nama Produk", "Kuantitas", "Harga"};
+        String[] rightTableColumns = {"Kode", "Nama Produk", "Kuantitas", "Harga", "Aksi"};
         DefaultTableModel rightTableModel = new DefaultTableModel(data, rightTableColumns);
-        return new JTable(rightTableModel);
+        JTable rightTable = new JTable(rightTableModel);
+
+//        rightTable.getColumn("Aksi").setCellEditor(new rightButtonRenderer(new JTextField()));
+//        rightTable.getColumn("Aksi").setCellEditor(new rightCellEditor(new JTextField()));
+
+        return rightTable;
     }
 }
