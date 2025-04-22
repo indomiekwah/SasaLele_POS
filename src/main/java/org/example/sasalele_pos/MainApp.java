@@ -1,5 +1,6 @@
 package org.example.sasalele_pos;
 
+import org.example.sasalele_pos.Dashboard.DashboardApp;
 import org.example.sasalele_pos.model.User;
 import org.example.sasalele_pos.services.AuthService;
 import org.example.sasalele_pos.services.ProductService;

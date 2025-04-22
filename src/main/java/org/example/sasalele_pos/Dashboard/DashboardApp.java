@@ -1,9 +1,14 @@
-package org.example.sasalele_pos;
+package org.example.sasalele_pos.Dashboard;
 
+import org.example.sasalele_pos.Dashboard.Transaksi.TransaksiPanel;
+import org.example.sasalele_pos.MainApp;
 import org.example.sasalele_pos.model.User;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class DashboardApp extends JPanel {
     static User currentUser;
@@ -50,6 +55,9 @@ public class DashboardApp extends JPanel {
             button.setFont(new Font("Arial", Font.PLAIN, 18));
             button.setAlignmentX(Component.CENTER_ALIGNMENT);
             button.setPreferredSize(new Dimension(180, 40));
+
+            button.addActionListener(new SidebarButtonListener());
+
             button.setBackground(Color.WHITE);  // Default background color (white)
             button.setForeground(Color.BLACK);  // Text color
             sidebar.add(button);
@@ -64,7 +72,9 @@ public class DashboardApp extends JPanel {
         logoutButton.setFont(new Font("Arial", Font.PLAIN, 18));
         logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutButton.setPreferredSize(new Dimension(180, 40));
+
         logoutButton.addActionListener(e -> Logout(logoutButton));
+
         sidebar.add(logoutButton);
         sidebar.add(Box.createVerticalStrut(10));
 
@@ -76,7 +86,7 @@ public class DashboardApp extends JPanel {
         JPanel panel = new JPanel(cardLayout);
 
         // Create panels for each section in the main frame
-        JPanel transaksiPanel = createTransaksiPanel();
+        TransaksiPanel transaksiPanel = new TransaksiPanel();
         JPanel produkPanel = createProdukPanel();
         JPanel akunPanel = createAkunPanel();
         JPanel logPanel = createLogPanel();
@@ -89,12 +99,6 @@ public class DashboardApp extends JPanel {
 
         // Initially show Transaksi panel
         cardLayout.show(panel, "Transaksi");
-
-        return panel;
-    }
-
-    private JPanel createTransaksiPanel() {
-        JPanel panel = new JPanel();
 
         return panel;
     }
@@ -115,6 +119,58 @@ public class DashboardApp extends JPanel {
         JPanel panel = new JPanel();
 
         return panel;
+    }
+
+    // ActionListener for sidebar buttons
+    private class SidebarButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String command = e.getActionCommand();
+            // Reset all button colors to default
+            resetButtonColors();
+
+            // Switch between the panels based on button clicked
+            switch (command) {
+                case "Produk":
+                    cardLayout.show(mainPanel, "Produk");
+                    highlightButton("Produk");
+                    break;
+                case "Akun":
+                    cardLayout.show(mainPanel, "Akun");
+                    highlightButton("Akun");
+                    break;
+                case "Log":
+                    cardLayout.show(mainPanel, "Log");
+                    highlightButton("Log");
+                    break;
+                default:
+                    cardLayout.show(mainPanel, "Transaksi");
+                    highlightButton("Transaksi");
+                    break;
+            }
+        }
+    }
+
+    // Method to reset button colors (to default)
+    private void resetButtonColors() {
+        for (Component comp : sidebarPanel.getComponents()) {
+            if (comp instanceof JButton button) {
+                button.setBackground(Color.WHITE);  // Set to default white color
+                button.setForeground(Color.BLACK);  // Optional: Change text color to white for better visibility
+            }
+        }
+    }
+
+    // Highlight the active button in the sidebar (blue for active)
+    private void highlightButton(String panelName) {
+        for (Component comp : sidebarPanel.getComponents()) {
+            if (comp instanceof JButton button) {
+                if (button.getText().equals(panelName)) {
+                    button.setBackground(new Color(54, 137, 209));  // Blue for active button
+                    button.setForeground(Color.WHITE);  // Optional: Change text color to white for better visibility
+                }
+            }
+        }
     }
 
     // Method to return to the login screen
