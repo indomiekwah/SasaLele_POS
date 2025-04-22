@@ -3,6 +3,7 @@ package org.example.sasalele_pos.database;
 import org.example.sasalele_pos.model.Log;
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class LogDAO {
 
             pstmt.setString(1, log.getType());
             pstmt.setString(2, log.getDescription());
-            pstmt.setString(3, log.getTimestamp().toString());
+            pstmt.setTimestamp(3, Timestamp.valueOf(log.getTimestamp()));
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -26,7 +27,7 @@ public class LogDAO {
 
     // Ambil log berdasarkan ID
     public Log getLogById(int logId) {
-        String sql = "SELECT * FROM logs WHERE logId = ?";
+        String sql = "SELECT * FROM logs WHERE log_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -57,10 +58,13 @@ public class LogDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                int logId = rs.getInt("logId");
+                int logId = rs.getInt("log_id");
                 String type = rs.getString("type");
                 String description = rs.getString("description");
-                LocalDateTime timestamp = LocalDateTime.parse(rs.getString("timestamp"));
+
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
+                LocalDateTime timestamp = LocalDateTime.parse(rs.getString("timestamp"), formatter);
 
                 logs.add(new Log(logId, type, description, timestamp));
             }
@@ -72,7 +76,7 @@ public class LogDAO {
 
     // Hapus log berdasarkan ID
     public boolean deleteLog(int logId) {
-        String sql = "DELETE FROM logs WHERE logId = ?";
+        String sql = "DELETE FROM logs WHERE log_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

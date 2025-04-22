@@ -1,0 +1,93 @@
+package org.example.sasalele_pos.Dashboard.Transaksi;
+
+import org.example.sasalele_pos.model.CartItem;
+
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.util.List;
+
+public class RightCellEditor extends DefaultCellEditor {
+    private String label;
+    private JTable table;
+    private List<CartItem> cartItems;
+
+    public RightCellEditor(JCheckBox checkBox, List<CartItem> cartItems) {
+        super(checkBox);
+        this.cartItems = cartItems;
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        this.table = table;
+
+        // Create action buttons with text labels
+        JButton decreaseButton = new JButton("<-");
+        JButton deleteButton = new JButton("D");
+        JButton increaseButton = new JButton("->");
+
+        // Set action listeners for buttons
+        decreaseButton.addActionListener(e -> handleActionButtonClick(row, "decrease", cartItems));
+        deleteButton.addActionListener(e -> handleActionButtonClick(row, "delete", cartItems));
+        increaseButton.addActionListener(e -> handleActionButtonClick(row, "increase", cartItems));
+
+        // Add buttons to a panel
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(decreaseButton);
+        buttonPanel.add(deleteButton);
+        buttonPanel.add(increaseButton);
+
+        return buttonPanel;
+    }
+
+    private void handleActionButtonClick(int row, String action, List<CartItem> cartItems) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        int qty = 0;
+
+        // Ensure the row exists before proceeding
+        if (row < 0 || row >= model.getRowCount()) {
+            System.out.println("Invalid row index: " + row);
+            return;  // Exit if the row is invalid
+        }
+
+        // Get current qty as Integer, not String, to avoid casting issues
+        try {
+            qty = Integer.parseInt((String) model.getValueAt(row, 2));  // Get current qty as Integer
+        } catch (NumberFormatException e) {
+            System.out.println("Error: " + e.getMessage());
+            return;  // Exit if there's an issue with converting qty to Integer
+        }
+
+        switch (action) {
+            case "decrease" -> {
+                if (qty > 0) {
+                    model.setValueAt(String.valueOf(qty - 1), row, 2);  // Decrease qty
+                    cartItems.get(row).setQuantity(qty - 1);
+                }
+            }
+            case "increase" -> {
+                model.setValueAt(String.valueOf(qty + 1), row, 2); // Increase qty
+                cartItems.get(row).setQuantity(qty + 1);
+            }
+            case "delete" -> {
+                // Only allow row deletion when it's the first row (index 0)
+                if (row == 0) {
+                    model.removeRow(row);  // Delete the first row
+                    cartItems.remove(row);
+                } else {
+                    // Show a dialog message if trying to delete any row other than the first row
+                    JOptionPane.showMessageDialog(table, "You can only delete the first row.", "Delete Not Allowed", JOptionPane.WARNING_MESSAGE);
+                }
+            }
+        }
+
+        // Refresh the table after deletion to avoid invalid index reference
+        table.revalidate();
+        table.repaint();
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        return label;
+    }
+}

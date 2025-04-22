@@ -16,7 +16,6 @@ import java.awt.event.ActionListener;
 public class DashboardApp extends JPanel {
     static User currentUser;
 
-
     private final JPanel sidebarPanel, mainPanel;
     private CardLayout cardLayout;  // To switch between different content in the main panel
 
@@ -89,7 +88,7 @@ public class DashboardApp extends JPanel {
         JPanel panel = new JPanel(cardLayout);
 
         // Create panels for each section in the main frame
-        TransaksiPanel transaksiPanel = new TransaksiPanel();
+        TransaksiPanel transaksiPanel = new TransaksiPanel(currentUser);
         ProdukPanel produkPanel = new ProdukPanel();
         AkunPanel akunPanel = new AkunPanel();
         LogPanel logPanel = new LogPanel();

@@ -1,13 +1,29 @@
 package org.example.sasalele_pos.Dashboard.Transaksi;
 
+import org.example.sasalele_pos.database.ProductDAO;
+import org.example.sasalele_pos.exceptions.InvalidTransactionException;
+import org.example.sasalele_pos.functions.CurrencyParser;
+import org.example.sasalele_pos.model.CartItem;
+import org.example.sasalele_pos.model.Product;
+import org.example.sasalele_pos.model.User;
+import org.example.sasalele_pos.services.TransactionService;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TransaksiPanel extends JPanel {
 
-    public TransaksiPanel() {
+    public static List<CartItem> cartItems = new ArrayList<>();
+    public static User currentUser;
+
+    public TransaksiPanel(User currentUser) {
+        TransaksiPanel.currentUser = currentUser;
+
         setLayout(new BorderLayout());
 
         JLabel titleLabel = new JLabel("Transaksi", JLabel.CENTER);
@@ -58,9 +74,6 @@ public class TransaksiPanel extends JPanel {
 
         JPanel buttonPanel = new JPanel();
         JButton searchButton = new JButton("Tambah Belanja");
-        searchButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Add Clicked!");
-        });
         buttonPanel.add(searchButton);
         rightSearchPanel.add(buttonPanel);
 
@@ -85,13 +98,16 @@ public class TransaksiPanel extends JPanel {
 
         // Grid Y = 0
         gbc.gridy = 0;
-        JLabel labelBelanja = new JLabel("Total Belanja: Rp. ");
+        JLabel labelBelanja = new JLabel("Total Belanja: ");
         labelBelanja.setFont(new Font("Arial", Font.BOLD, 15));
         labelBelanja.setForeground(Color.BLACK);
         gbc.gridx = 0;
         rightBottomPanel.add(labelBelanja, gbc);
 
-        JLabel totalBelanja = new JLabel("0");
+        JLabel totalBelanja = new JLabel("0,00");
+        rightCenterTable.getModel().addTableModelListener(e -> {
+            setTotalPrice(rightCenterTable, totalBelanja);
+        });
         totalBelanja.setFont(new Font("Arial", Font.BOLD, 15));
         totalBelanja.setForeground(Color.BLACK);
         gbc.gridx = 1;
@@ -116,42 +132,131 @@ public class TransaksiPanel extends JPanel {
         JPanel transButtonPanel = new JPanel();
         JButton transButton = new JButton("Lanjutkan Transaksi");
         transButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Lanjutkan Transaksi!");
+            double hargaBelanja = CurrencyParser.convertCurrencyToDouble(totalBelanja.getText());
+            double totalUang = Double.parseDouble(uangField.getText());
+            double kembalian = hargaBelanja - totalUang;
+
+            if (hargaBelanja > totalUang) {
+                JOptionPane.showMessageDialog(null, "Uang pelanggan kurang: Rp. " + String.format("%,.2f", (hargaBelanja - totalUang)));
+            } else {
+                TransactionService transactionService = new TransactionService();
+                try {
+                    transactionService.processSale(cartItems, totalUang, currentUser.getUsername());
+                } catch (InvalidTransactionException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
         });
         transButtonPanel.add(transButton);
         gbc.gridwidth = 2;
         gbc.gridx = 0;
         rightBottomPanel.add(transButtonPanel, gbc);
+
+        searchButton.addActionListener(e -> {
+            String id = idField.getText();
+            int quantity = Integer.parseInt(quantityField.getText());
+
+            addProductToCart(rightCenterTable, id, quantity, cartItems);
+        });
     }
 
-    private JTable createLeftTable() {
-        String[][] data = {
-                {"1", "Product A", "PERISHABLE", "100.0"},
-                {"2", "Product B", "NON_PERISHABLE", "50.0"},
-                {"3", "Product C", "DIGITAL", "200.0"},
-                {"4", "Product D", "BUNDLE", "120.0"}
-        };
+    private static void addProductToCart(JTable table, String id, int quantity, List<CartItem> cartItems) {
+        Product product = ProductDAO.getProductById(id);
+
+        if (product != null) {
+            CartItem newItem = new CartItem(product, quantity);
+            cartItems.add(newItem);
+
+            String[] newRow = new String[5];
+            newRow[0] = id;
+            newRow[1] = product.getName();
+            newRow[2] = String.valueOf(quantity);
+            newRow[3] = String.format("Rp. %,.2f", product.getPrice());
+            newRow[4] = "Action";
+
+
+            DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+            tableModel.addRow(newRow);
+        } else {
+            JOptionPane.showMessageDialog(null, "Produk tidak ditemukan!");
+        }
+    }
+
+    private static JTable createLeftTable() {
+        List<Product> products = ProductDAO.getAllProducts();
+
+        String[][] data = new String[products.size()][4];  // 4 columns: ID, Name, Type, Price
+
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+
+            data[i][0] = product.getId();                // Product ID
+            data[i][1] = product.getName();              // Product Name
+            data[i][2] = product.getProductType();       // Product Type (e.g., Perishable, Digital)
+            data[i][3] = String.format("Rp. %,.2f", product.getPrice()); // Product Price with formatting
+        }
+
         String[] leftTableColumns = {"Kode", "Nama Produk", "Tipe", "Harga"};
 
-        // Create the table model and JTable
         DefaultTableModel leftTableModel = new DefaultTableModel(data, leftTableColumns);
+
         return new JTable(leftTableModel);
     }
 
-    private JTable createRightTable() {
-        String[][] data = {
-                {"1", "Product A", "10", "100.0"},
-                {"2", "Product B", "5", "50.0"},
-                {"3", "Product C", "20", "200.0"},
-                {"4", "Product D", "2", "120"}
-        };
+    private static JTable createRightTable() {
+        String[][] data = new String[0][5];
         String[] rightTableColumns = {"Kode", "Nama Produk", "Kuantitas", "Harga", "Aksi"};
         DefaultTableModel rightTableModel = new DefaultTableModel(data, rightTableColumns);
         JTable rightTable = new JTable(rightTableModel);
+        rightTable.setRowHeight(40);
 
-//        rightTable.getColumn("Aksi").setCellEditor(new rightButtonRenderer(new JTextField()));
-//        rightTable.getColumn("Aksi").setCellEditor(new rightCellEditor(new JTextField()));
+        rightTable.getColumn("Aksi").setCellRenderer(new RightButtonRenderer());
+        rightTable.getColumn("Aksi").setCellEditor(new RightCellEditor(new JCheckBox(), cartItems));
 
         return rightTable;
+    }
+
+    public static void setTotalPrice(JTable table, JLabel totalBelanja) {
+        // Initialize the total price to 0
+        double totalHarga = 0;
+
+        // Iterate over all the rows of the table (starting from row 0)
+        for (int i = 0; i < table.getModel().getRowCount(); i++) {
+            try {
+                // Get the price and quantity for each row
+                double price = CurrencyParser.convertCurrencyToDouble((String) table.getModel().getValueAt(i, 3));  // Assuming the "Price" column is at index 3
+                int quantity = (int) CurrencyParser.convertCurrencyToDouble((String) table.getModel().getValueAt(i, 2));     // Assuming the "Quantity" column is at index 2
+
+                // Add the subtotal (price * quantity) to the total price
+                totalHarga += price * quantity;
+            } catch (Exception e) {
+                System.err.println("Error processing row " + i + ": " + e.getMessage());
+            }
+        }
+
+        totalBelanja.setText(String.format("Rp. %,.2f", totalHarga));
+    }
+
+    private static void refreshTable(JTable table) {
+        List<Product> products = ProductDAO.getAllProducts();
+
+        // Create a 2D array to store the data for the table
+        String[][] data = new String[products.size()][4];  // 4 columns: ID, Name, Type, Price
+
+        // Populate the data array with values from the product list
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+
+            data[i][0] = product.getId();                // Product ID
+            data[i][1] = product.getName();              // Product Name
+            data[i][2] = product.getProductType();       // Product Type (e.g., Perishable, Digital)
+            data[i][3] = String.format("Rp. %,.2f", product.getPrice()); // Product Price with formatting
+        }
+
+        String[] leftTableColumns = {"Kode", "Nama Produk", "Tipe", "Harga"};
+
+        DefaultTableModel leftTableModel = new DefaultTableModel(data, leftTableColumns);
+
+        table.setModel(leftTableModel);
     }
 }
