@@ -55,6 +55,21 @@ public class UserDAO {
         }
     }
 
+    // Method untuk mengecek user
+    public boolean checkUser(String username) {
+        String sql = "SELECT * FROM users WHERE username = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            return rs.next(); // Mengembalikan true jika user ditemukan
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // Method untuk menghapus user
     public boolean deleteUser(String username) {
         String sql = "DELETE FROM users WHERE username = ?";

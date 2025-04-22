@@ -6,7 +6,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class AuthService {
     private User currentUser;
-    private UserDAO userDAO = new UserDAO();
+    private final UserDAO userDAO = new UserDAO();
 
     public boolean registerUser(String username, String password, String role) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
@@ -28,5 +28,9 @@ public class AuthService {
     // Method untuk mendapatkan user yang sedang login
     public User getCurrentUser() {
         return currentUser; // ✅ Kembalikan currentUser
+    }
+
+    public boolean userExists(String username) {
+        return userDAO.checkUser(username);
     }
 }
