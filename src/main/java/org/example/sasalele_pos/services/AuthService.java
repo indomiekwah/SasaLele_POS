@@ -6,12 +6,23 @@ import org.mindrot.jbcrypt.BCrypt;
 
 public class AuthService {
     private User currentUser;
-    private final UserDAO userDAO = new UserDAO();
+    private UserDAO userDAO = new UserDAO();
+    private LogService logService = new LogService();
 
     public boolean registerUser(String username, String password, String role) {
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         User user = new User(username, hashedPassword, role);
         userDAO.addUser(user);
+        try {
+            // Catat log
+            logService.logAction(
+                    "AUTH",
+                    "Pengguna " + username + " telah membuat akun Sasalele."
+            );
+
+        } catch (Exception e) {
+            logService.logAction("ERROR", "Pengguna " + username + " Gagal register: " + e.getMessage());
+        }
         return true;
     }
 
@@ -20,6 +31,16 @@ public class AuthService {
         User user = userDAO.getUser(username);
         if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             this.currentUser = user; // ✅ Simpan user yang berhasil login
+            try {
+                // Catat log
+                logService.logAction(
+                        "AUTH",
+                        "Pengguna" + username + " login Sasalele."
+                );
+
+            } catch (Exception e) {
+                logService.logAction("ERROR", "Pengguna " + username + " Gagal login: " + e.getMessage());
+            }
             return true;
         }
         return false;

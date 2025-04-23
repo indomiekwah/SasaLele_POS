@@ -3,6 +3,7 @@ package org.example.sasalele_pos.services;
 import org.example.sasalele_pos.database.ProductDAO;
 import org.example.sasalele_pos.exceptions.InvalidProductException;
 import org.example.sasalele_pos.model.*;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +13,11 @@ import java.util.Optional;
  */
 public class ProductService {
     private final ProductDAO productDAO;
+    private final LogService logService;
 
     public ProductService() {
         this.productDAO = new ProductDAO();
+        this.logService = new LogService();
     }
 
     // ---------------------- CORE METHODS ----------------------
@@ -25,6 +28,18 @@ public class ProductService {
     public void addProduct(Product product) throws InvalidProductException {
         validateProduct(product);
         productDAO.addProduct(product);
+
+        try {
+            // Catat log
+            logService.logAction(
+                    "PRODUCT_UPDATE",
+                    "Produk " + product.getId() + " berhasil ditambahkan."
+            );
+
+        } catch (Exception e) {
+            logService.logAction("ERROR", "Gagal memproses produk: " + e.getMessage());
+            throw new InvalidProductException(e.getMessage());
+        }
     }
 
     /**
@@ -40,6 +55,18 @@ public class ProductService {
         }
 
         productDAO.updateProduct(product);
+
+        try {
+            // Catat log
+            logService.logAction(
+                    "PRODUCT_UPDATE",
+                    "Produk " + product.getId() + " berhasil diedit."
+            );
+
+        } catch (Exception e) {
+            logService.logAction("ERROR", "Gagal memproses produk: " + e.getMessage());
+            throw new InvalidProductException(e.getMessage());
+        }
     }
 
     /**
@@ -71,11 +98,9 @@ public class ProductService {
         // Validasi khusus berdasarkan jenis produk
         if (product instanceof PerishableProduct) {
             validatePerishableProduct((PerishableProduct) product);
-        }
-        else if (product instanceof DigitalProduct) {
+        } else if (product instanceof DigitalProduct) {
             validateDigitalProduct((DigitalProduct) product);
-        }
-        else if (product instanceof BundleProduct) {
+        } else if (product instanceof BundleProduct) {
             validateBundleProduct((BundleProduct) product);
         }
     }
