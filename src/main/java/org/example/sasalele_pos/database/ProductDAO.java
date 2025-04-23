@@ -69,9 +69,7 @@ public class ProductDAO {
                         return new DigitalProduct(id, name, price, url, vendorName);
 
                     case "BUNDLE":
-                        // Ambil item bundle dari tabel terpisah (bundle_items)
-//                        List<Product> bundleItems = getBundleItems(id);
-                        return new BundleProduct(id, name, price); // Diskon diambil dari logika lain
+                        return new BundleProduct(id, name, price);
 
                     default: // NON_PERISHABLE
                         return new NonPerishableProduct(id, name, price);

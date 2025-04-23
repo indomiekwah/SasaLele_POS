@@ -147,6 +147,7 @@ public class TransaksiPanel extends JPanel {
                 TransactionService transactionService = new TransactionService();
                 try {
                     transactionService.processSale(cartItems, totalUang, currentUser.getUsername());
+                    new ShowTransactionDialog(currentUser, hargaBelanja, totalUang, kembalian, rightCenterTable);
                 } catch (InvalidTransactionException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -178,7 +179,6 @@ public class TransaksiPanel extends JPanel {
             newRow[2] = String.valueOf(quantity);
             newRow[3] = String.format("Rp. %,.2f", product.getPrice());
             newRow[4] = "Action";
-
 
             DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
             tableModel.addRow(newRow);
@@ -234,7 +234,6 @@ public class TransaksiPanel extends JPanel {
 
                 // Add the subtotal (price * quantity) to the total price
                 totalHarga += price * quantity;
-                refreshTable(table);
             } catch (Exception e) {
                 System.err.println("Error processing row " + i + ": " + e.getMessage());
             }

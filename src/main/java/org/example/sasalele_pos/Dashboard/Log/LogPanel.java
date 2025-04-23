@@ -33,6 +33,7 @@ public class LogPanel extends JPanel {
         centerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         centerPanel.add(centerScrollPane, BorderLayout.CENTER);
         add(centerPanel, BorderLayout.CENTER);
+        table = centerTable;
     }
 
     private JTable createLogTable() {
