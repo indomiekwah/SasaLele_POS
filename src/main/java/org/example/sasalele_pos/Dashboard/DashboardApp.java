@@ -8,7 +8,6 @@ import org.example.sasalele_pos.MainApp;
 import org.example.sasalele_pos.model.User;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +18,10 @@ public class DashboardApp extends JPanel {
     private final JPanel sidebarPanel, mainPanel;
     private CardLayout cardLayout;  // To switch between different content in the main panel
 
+    TransaksiPanel transaksiPanel;
+    ProdukPanel produkPanel;
+    AkunPanel akunPanel;
+    LogPanel logPanel;
 
     public DashboardApp(User currentUser) {
         DashboardApp.currentUser = currentUser;
@@ -88,10 +91,10 @@ public class DashboardApp extends JPanel {
         JPanel panel = new JPanel(cardLayout);
 
         // Create panels for each section in the main frame
-        TransaksiPanel transaksiPanel = new TransaksiPanel(currentUser);
-        ProdukPanel produkPanel = new ProdukPanel();
-        AkunPanel akunPanel = new AkunPanel();
-        LogPanel logPanel = new LogPanel();
+        transaksiPanel = new TransaksiPanel(currentUser);
+        produkPanel = new ProdukPanel(currentUser);
+        akunPanel = new AkunPanel();
+        logPanel = new LogPanel();
 
         // Add all panels to the main panel (card layout)
         panel.add(transaksiPanel, "Transaksi");
@@ -119,6 +122,7 @@ public class DashboardApp extends JPanel {
                 case "Produk":
                     cardLayout.show(mainPanel, "Produk");
                     highlightButton("Produk");
+                    ProdukPanel.refreshProductTable(produkPanel.getRightTable());
                     break;
                 case "Akun":
                     cardLayout.show(mainPanel, "Akun");
@@ -131,6 +135,7 @@ public class DashboardApp extends JPanel {
                 default:
                     cardLayout.show(mainPanel, "Transaksi");
                     highlightButton("Transaksi");
+                    TransaksiPanel.refreshTable(transaksiPanel.getProductTable());
                     break;
             }
         }

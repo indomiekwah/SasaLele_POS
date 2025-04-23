@@ -16,10 +16,14 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.sasalele_pos.Dashboard.Produk.ProdukPanel.refreshProductTable;
+
 public class TransaksiPanel extends JPanel {
 
     public static List<CartItem> cartItems = new ArrayList<>();
     public static User currentUser;
+
+    private static JTable productTable;
 
     public TransaksiPanel(User currentUser) {
         TransaksiPanel.currentUser = currentUser;
@@ -44,6 +48,7 @@ public class TransaksiPanel extends JPanel {
         JTable leftTable = createLeftTable();
         leftPanel.setViewportView(leftTable);
         centerLayout.add(leftPanel);
+        productTable = leftTable;
 
         // Right Panel
         JPanel rightPanel = new JPanel();
@@ -216,7 +221,7 @@ public class TransaksiPanel extends JPanel {
         return rightTable;
     }
 
-    public static void setTotalPrice(JTable table, JLabel totalBelanja) {
+    private static void setTotalPrice(JTable table, JLabel totalBelanja) {
         // Initialize the total price to 0
         double totalHarga = 0;
 
@@ -229,6 +234,7 @@ public class TransaksiPanel extends JPanel {
 
                 // Add the subtotal (price * quantity) to the total price
                 totalHarga += price * quantity;
+                refreshTable(table);
             } catch (Exception e) {
                 System.err.println("Error processing row " + i + ": " + e.getMessage());
             }
@@ -237,7 +243,7 @@ public class TransaksiPanel extends JPanel {
         totalBelanja.setText(String.format("Rp. %,.2f", totalHarga));
     }
 
-    private static void refreshTable(JTable table) {
+    public static void refreshTable(JTable table) {
         List<Product> products = ProductDAO.getAllProducts();
 
         // Create a 2D array to store the data for the table
@@ -258,5 +264,9 @@ public class TransaksiPanel extends JPanel {
         DefaultTableModel leftTableModel = new DefaultTableModel(data, leftTableColumns);
 
         table.setModel(leftTableModel);
+    }
+
+    public JTable getProductTable() {
+        return productTable;
     }
 }

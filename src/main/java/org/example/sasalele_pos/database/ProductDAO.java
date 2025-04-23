@@ -173,4 +173,15 @@ public class ProductDAO {
         }
         return items;
     }
+
+    public void deleteProductFromTransactionItems(String productId) throws SQLException {
+        String sql = "DELETE FROM transaction_items WHERE product_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, productId);
+            pstmt.executeUpdate();
+        }
+    }
 }
