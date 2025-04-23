@@ -93,8 +93,8 @@ public class DashboardApp extends JPanel {
         // Create panels for each section in the main frame
         transaksiPanel = new TransaksiPanel(currentUser);
         produkPanel = new ProdukPanel(currentUser);
-        akunPanel = new AkunPanel();
-        logPanel = new LogPanel();
+        akunPanel = new AkunPanel(currentUser);
+        logPanel = new LogPanel(currentUser);
 
         // Add all panels to the main panel (card layout)
         panel.add(transaksiPanel, "Transaksi");
@@ -127,10 +127,12 @@ public class DashboardApp extends JPanel {
                 case "Akun":
                     cardLayout.show(mainPanel, "Akun");
                     highlightButton("Akun");
+                    AkunPanel.refreshUserTable(AkunPanel.getAccountTable());
                     break;
                 case "Log":
                     cardLayout.show(mainPanel, "Log");
                     highlightButton("Log");
+                    LogPanel.refreshLogTable(LogPanel.getLogTable());
                     break;
                 default:
                     cardLayout.show(mainPanel, "Transaksi");

@@ -1,13 +1,23 @@
 package org.example.sasalele_pos.Dashboard.Log;
 
+import org.example.sasalele_pos.Dashboard.Produk.ProdukPanel;
+import org.example.sasalele_pos.database.LogDAO;
+import org.example.sasalele_pos.model.Log;
+import org.example.sasalele_pos.model.User;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.List;
 
 public class LogPanel extends JPanel {
+    static JTable table;
+    static User currentUser;
 
-    public LogPanel() {
+    public LogPanel(User currentUser) {
+        LogPanel.currentUser = currentUser;
+
         setLayout(new BorderLayout());
 
         JLabel titleLabel = new JLabel("Log", JLabel.CENTER);
@@ -26,19 +36,49 @@ public class LogPanel extends JPanel {
     }
 
     private JTable createLogTable() {
-        String[][] data = {
-                {"2025-04-22T21:32:43.653521", "TRANSACTION", "Transaksi TX-1745332361913 berhasil diproses. Total: Rp58500.0"},
-                {"2025-04-22T22:24:57.985568", "REFUND", "Refund TX-1745335496954 untuk transaksi TX-1745332361913"}
-        };
+        List<Log> logs = new LogDAO().getAllLogs();
+
+        String[][] data = new String[logs.size()][4];
         String[] logTableColumns = {"Timestamp", "Tipe", "Deskripsi Log", "Aksi"};
+
+        for (int i = 0; i < logs.size(); i++) {
+            data[i][0] = logs.get(i).getTimestamp().toString();
+            data[i][1] = logs.get(i).getType();
+            data[i][2] = logs.get(i).getDescription();
+            data[i][3] = "Aksi";
+        }
 
         // Create the table model and JTable
         DefaultTableModel logTableModel = new DefaultTableModel(data, logTableColumns);
         JTable logTable = new JTable(logTableModel);
 
-//        logTable.getColumn("Aksi").setCellEditor(new centerButtonRenderer(new JTextField()));
-//        logTable.getColumn("Aksi").setCellEditor(new centerCellEditor(new JTextField()));
+        logTable.getColumn("Aksi").setCellRenderer(new LogButtonRenderer());
+        logTable.getColumn("Aksi").setCellEditor(new LogCellEditor(new JTextField(), currentUser));
 
         return logTable;
+    }
+
+    public static void refreshLogTable(JTable table) {
+        List<Log> logs = new LogDAO().getAllLogs();
+
+        String[][] data = new String[logs.size()][4];
+        String[] logTableColumns = {"Timestamp", "Tipe", "Deskripsi Log", "Aksi"};
+
+        for (int i = 0; i < logs.size(); i++) {
+            data[i][0] = logs.get(i).getTimestamp().toString();
+            data[i][1] = logs.get(i).getType();
+            data[i][2] = logs.get(i).getDescription();
+            data[i][3] = "Aksi";
+        }
+
+        DefaultTableModel logTableModel = new DefaultTableModel(data, logTableColumns);
+        table.setModel(logTableModel);
+
+        table.getColumn("Aksi").setCellRenderer(new LogButtonRenderer());
+        table.getColumn("Aksi").setCellEditor(new LogCellEditor(new JTextField(), currentUser));
+    }
+
+    public static JTable getLogTable() {
+        return table;
     }
 }
