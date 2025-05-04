@@ -6,6 +6,7 @@ import org.example.sasalele_pos.model.Product;
 import org.example.sasalele_pos.model.User;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
@@ -54,25 +55,37 @@ public class ShowTransactionDialog {
 
         // gbc Y = 3
         gbc.gridy = 3;
-        JTable transactionTable = createTransactionTable(table);
-
+        JPanel emptyPanel = new JPanel();
         gbc.gridx = 0;
-        centerLayout.add(transactionTable, gbc);
+        centerLayout.add(emptyPanel, gbc);
 
         // gbc Y = 4
         gbc.gridy = 4;
+        JTable transactionTable = createTransactionTable(table);
+        gbc.gridx = 0;
+        centerLayout.add(transactionTable, gbc);
+
+        // gbc Y = 5
+        gbc.gridy = 5;
+        JPanel emptyPanel2 = new JPanel();
+        gbc.gridx = 0;
+        centerLayout.add(emptyPanel2, gbc);
+
+        // gbc Y = 6
+        gbc.gridy = 6;
         JButton okButton = new JButton("Done");
         okButton.addActionListener(e -> {
             productTypeDialog.dispose();
         });
         gbc.gridx = 0;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 3;
         centerLayout.add(okButton, gbc);
+
+        productTypeDialog.setVisible(true);
     }
 
     private static JTable createTransactionTable(JTable table) {
-
-        String[][] data = new String[table.getRowCount()][4];  // 4 columns: ID, Name, Type, Price
+        String[][] data = new String[table.getRowCount()][5];  // 5 columns: ID, Name, Type, Price
 
         for (int i = 0; i < table.getRowCount(); i++) {
             data[i][0] = (String) table.getValueAt(i, 0);  // ID
@@ -84,12 +97,10 @@ public class ShowTransactionDialog {
             data[i][4] = String.format("Rp. " + "%,.2f", qty * harga); // Total (Qty * Harga)
         }
 
-        String[] leftTableColumns = {"ID", "Nama Produk", "Qty", "Harga", "Total"};
+        String[] tableColumns = {"ID", "Nama Produk", "Qty", "Harga", "Total"};
 
-        DefaultTableModel leftTableModel = new DefaultTableModel(data, leftTableColumns);
+        DefaultTableModel tableModel = new DefaultTableModel(data, tableColumns);
 
-        return new JTable(leftTableModel);
+        return new JTable(tableModel);
     }
-
-
 }

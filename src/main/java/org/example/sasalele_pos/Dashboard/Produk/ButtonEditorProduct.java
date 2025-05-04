@@ -6,6 +6,7 @@ import org.example.sasalele_pos.model.DigitalProduct;
 import org.example.sasalele_pos.model.NonPerishableProduct;
 import org.example.sasalele_pos.model.PerishableProduct;
 import org.example.sasalele_pos.services.ProductService;
+import org.example.sasalele_pos.services.TransactionService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -48,34 +49,27 @@ public class ButtonEditorProduct extends DefaultCellEditor {
 
         // Add action listener for the Delete button
         deleteButton.addActionListener(e -> {
-            // Only allow deletion of the first row
-            if (row == 0) {
-                // Get the product ID from the selected row in the table
-                String productId = (String) table.getModel().getValueAt(row, 0);
+            // Get the product ID from the selected row in the table
+            String productId = (String) table.getModel().getValueAt(row, 0);
 
-                // Remove the product from the table first
-                ((DefaultTableModel) table.getModel()).removeRow(row);
+            // Now, attempt to delete the product from the database
+            ProductDAO productDAO = new ProductDAO();
+            // Check if the product exists and is referenced in the database
+            if (productId.equals(Objects.requireNonNull(ProductDAO.getProductById(productId)).getId())) {
+                try {
+                    // First, remove references in transaction_items table
+                    productDAO.deleteProductFromTransactionItems(productId);  // This method will delete related transaction items
 
-                // Now, attempt to delete the product from the database
-                ProductDAO productDAO = new ProductDAO();
-
-                // Check if the product exists and is referenced in the database
-                if (Objects.equals(Objects.requireNonNull(ProductDAO.getProductById(productId)).getId(), productId)) {
-                    try {
-                        // First, remove references in transaction_items table
-                        productDAO.deleteProductFromTransactionItems(productId);  // This method will delete related transaction items
-
-                        // Then, delete the product from the products table
-                        productDAO.deleteProduct(productId);  // Now delete the product
-                        JOptionPane.showMessageDialog(null, "Product deleted successfully!");
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(null, "Failed to delete product: " + ex.getMessage());
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(null, "Product does not exist");
+                    ProductService productService = new ProductService();
+                    // Then, delete the product from the products table
+                    productService.deleteProduct(productId);
+                    ((DefaultTableModel) table.getModel()).removeRow(row);
+                    JOptionPane.showMessageDialog(null, "Product deleted successfully!");
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(null, "Failed to delete product: " + ex.getMessage());
                 }
             } else {
-                JOptionPane.showMessageDialog(table, "You can only delete the first row.", "Delete Not Allowed", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Product does not exist");
             }
         });
 

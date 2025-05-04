@@ -17,6 +17,9 @@ public class LogButtonRenderer extends JButton implements TableCellRenderer {
         JPanel refundPanel = new JPanel();
         refundPanel.add(refundButton);
 
+        String type = (String) table.getModel().getValueAt(row, 1);
+        refundButton.setVisible("TRANSACTION".equals(type));
+
         return refundPanel;
     }
 }

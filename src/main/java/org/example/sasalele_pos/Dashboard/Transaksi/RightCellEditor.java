@@ -61,23 +61,32 @@ public class RightCellEditor extends DefaultCellEditor {
         switch (action) {
             case "decrease" -> {
                 if (qty > 0) {
-                    model.setValueAt(String.valueOf(qty - 1), row, 2);  // Decrease qty
-                    cartItems.get(row).setQuantity(qty - 1);
+                    model.setValueAt(String.valueOf(qty - 1), row, 2);  // Decrease qty in the table
+
+                    CartItem cartItem = cartItems.get(row);  // Get the CartItem from cartItems list at the same row
+                    int newQuantity = cartItem.getQuantity() - 1;  // Decrease the quantity by 1
+
+                    // Set the new quantity, ensuring it's at least 1
+                    if (newQuantity >= 1) {
+                        cartItem.setQuantity(newQuantity);  // Update the quantity of the CartItem
+                    } else {
+                        // Optionally, handle if the quantity is 0 or less (e.g., remove from cart)
+                        cartItems.remove(row);  // Remove the item from the cart if quantity is zero or less
+                        model.removeRow(row);  // Remove the row from the table
+                    }
                 }
             }
             case "increase" -> {
                 model.setValueAt(String.valueOf(qty + 1), row, 2); // Increase qty
-                cartItems.get(row).setQuantity(qty + 1);
+
+                CartItem cartItem = cartItems.get(row);
+                int newQuantity = cartItem.getQuantity() + 1;
+
+                cartItem.setQuantity(newQuantity);
             }
             case "delete" -> {
-                // Only allow row deletion when it's the first row (index 0)
-                if (row == 0) {
-                    model.removeRow(row);  // Delete the first row
-                    cartItems.remove(row);
-                } else {
-                    // Show a dialog message if trying to delete any row other than the first row
-                    JOptionPane.showMessageDialog(table, "You can only delete the first row.", "Delete Not Allowed", JOptionPane.WARNING_MESSAGE);
-                }
+                cartItems.remove(row);  // Remove the item from the cart if quantity is zero or less
+                model.removeRow(row);  // Remove the row from the table
             }
         }
 

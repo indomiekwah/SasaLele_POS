@@ -1,6 +1,7 @@
 package org.example.sasalele_pos.database;
 
 import org.example.sasalele_pos.model.Log;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -61,10 +62,19 @@ public class LogDAO {
                 int logId = rs.getInt("log_id");
                 String type = rs.getString("type");
                 String description = rs.getString("description");
+                String timestampStr = rs.getString("timestamp");
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+                if (timestampStr.contains(".")) {
+                    String[] parts = timestampStr.split("\\.");
+                    String fractionalPart = parts[1];
+                    if (fractionalPart.length() > 5) {
+                        timestampStr = parts[0] + "." + fractionalPart.substring(0, 5);
+                    }
+                }
 
-                LocalDateTime timestamp = LocalDateTime.parse(rs.getString("timestamp"), formatter);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSS");
+
+                LocalDateTime timestamp = LocalDateTime.parse(timestampStr, formatter);
 
                 logs.add(new Log(logId, type, description, timestamp));
             }

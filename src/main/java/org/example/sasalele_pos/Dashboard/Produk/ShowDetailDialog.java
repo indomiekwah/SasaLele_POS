@@ -287,7 +287,6 @@ public class ShowDetailDialog extends JPanel {
                         throw new RuntimeException(ex);
                     }
                     productTypeDialog.dispose();
-                    refreshProductTable(new ProdukPanel(currentUser).getRightTable());
                 });
                 gbc.gridx = 0;
                 gbc.gridwidth = 2;

@@ -1,6 +1,7 @@
 package org.example.sasalele_pos.database;
 
 import org.example.sasalele_pos.model.*;
+import org.example.sasalele_pos.services.LogService;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -8,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDAO {
+    private LogService logService;
+
     // Tambahkan produk ke database
     public void addProduct(Product product) {
         String sql = "INSERT INTO products(id, name, price, type, expiry_date, url, vendor_name) VALUES(?, ?, ?, ?, ?, ?, ?)";

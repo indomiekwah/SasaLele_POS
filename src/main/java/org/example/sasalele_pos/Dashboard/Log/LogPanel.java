@@ -52,6 +52,7 @@ public class LogPanel extends JPanel {
         // Create the table model and JTable
         DefaultTableModel logTableModel = new DefaultTableModel(data, logTableColumns);
         JTable logTable = new JTable(logTableModel);
+        logTable.setRowHeight(40);
 
         logTable.getColumn("Aksi").setCellRenderer(new LogButtonRenderer());
         logTable.getColumn("Aksi").setCellEditor(new LogCellEditor(new JTextField(), currentUser));
@@ -74,6 +75,7 @@ public class LogPanel extends JPanel {
 
         DefaultTableModel logTableModel = new DefaultTableModel(data, logTableColumns);
         table.setModel(logTableModel);
+        table.setRowHeight(40);
 
         table.getColumn("Aksi").setCellRenderer(new LogButtonRenderer());
         table.getColumn("Aksi").setCellEditor(new LogCellEditor(new JTextField(), currentUser));

@@ -54,9 +54,9 @@ public class ShowAddDialog extends JDialog {
         okButton.addActionListener(e -> {
             String selectedType = (String) tipeProdukBox.getSelectedItem();
             assert selectedType != null;
+            productTypeDialog.dispose();  // Close the product type dialog
             ShowDetailDialog showDetailDialog = new ShowDetailDialog(currentUser, selectedType);
             showDetailDialog.setVisible(true);
-            productTypeDialog.dispose();  // Close the product type dialog
         });
 
         // Show the productTypeDialog

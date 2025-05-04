@@ -26,7 +26,7 @@ public class ProductService {
      * Menambahkan produk baru dengan validasi ketat.
      */
     public void addProduct(Product product) throws InvalidProductException {
-        validateProduct(product);
+//        validateProduct(product);
         productDAO.addProduct(product);
 
         try {
@@ -60,7 +60,7 @@ public class ProductService {
             // Catat log
             logService.logAction(
                     "PRODUCT_UPDATE",
-                    "Produk " + product.getId() + " berhasil diedit."
+                    "Produk " + product.getId() + " berhasil diubah."
             );
 
         } catch (Exception e) {
@@ -73,6 +73,12 @@ public class ProductService {
      * Menghapus produk berdasarkan ID.
      */
     public boolean deleteProduct(String productId) {
+        // Catat log
+        logService.logAction(
+                "PRODUCT_UPDATE",
+                "Produk " + productId + " berhasil dihapus."
+        );
+
         return productDAO.deleteProduct(productId);
     }
 

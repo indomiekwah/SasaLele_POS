@@ -109,7 +109,7 @@ public class TransaksiPanel extends JPanel {
         gbc.gridx = 0;
         rightBottomPanel.add(labelBelanja, gbc);
 
-        JLabel totalBelanja = new JLabel("0,00");
+        JLabel totalBelanja = new JLabel("Rp. 0,00");
         rightCenterTable.getModel().addTableModelListener(e -> {
             setTotalPrice(rightCenterTable, totalBelanja);
         });
@@ -139,15 +139,25 @@ public class TransaksiPanel extends JPanel {
         transButton.addActionListener(e -> {
             double hargaBelanja = CurrencyParser.convertCurrencyToDouble(totalBelanja.getText());
             double totalUang = Double.parseDouble(uangField.getText());
-            double kembalian = hargaBelanja - totalUang;
+            double kembalian = totalUang - hargaBelanja;
 
             if (hargaBelanja > totalUang) {
                 JOptionPane.showMessageDialog(null, "Uang pelanggan kurang: Rp. " + String.format("%,.2f", (hargaBelanja - totalUang)));
             } else {
                 TransactionService transactionService = new TransactionService();
                 try {
-                    transactionService.processSale(cartItems, totalUang, currentUser.getUsername());
-                    new ShowTransactionDialog(currentUser, hargaBelanja, totalUang, kembalian, rightCenterTable);
+                    double process = transactionService.processSale(cartItems, totalUang, currentUser.getUsername());
+                    if (process == totalUang - hargaBelanja) {
+                        new ShowTransactionDialog(currentUser, hargaBelanja, totalUang, kembalian, rightCenterTable);
+
+                        idField.setText("");
+                        quantityField.setText("");
+
+                        cartItems.clear();
+                        DefaultTableModel rightCenterModel = (DefaultTableModel) rightCenterTable.getModel();
+                        rightCenterModel.setRowCount(0);
+                        rightCenterTable.setModel(rightCenterModel);
+                    }
                 } catch (InvalidTransactionException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -163,6 +173,9 @@ public class TransaksiPanel extends JPanel {
             int quantity = Integer.parseInt(quantityField.getText());
 
             addProductToCart(rightCenterTable, id, quantity, cartItems);
+
+            idField.setText("");
+            quantityField.setText("");
         });
     }
 

@@ -44,6 +44,7 @@ public class ProdukPanel extends JPanel {
 
         tambahButton.addActionListener(e -> {
             new ShowAddDialog(currentUser);
+            refreshProductTable(centerTable);
         });
     }
 
