@@ -32,9 +32,6 @@ public class PerishableProduct extends Product {
      * @throws IllegalArgumentException jika tanggal tidak valid
      */
     public void setExpiryDate(LocalDate expiryDate) {
-        if (expiryDate.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Tanggal kadaluarsa tidak boleh lebih awal dari hari ini!");
-        }
         this.expiryDate = expiryDate;
     }
 
