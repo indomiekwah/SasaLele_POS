@@ -67,12 +67,12 @@ public class LogDAO {
                 if (timestampStr.contains(".")) {
                     String[] parts = timestampStr.split("\\.");
                     String fractionalPart = parts[1];
-                    if (fractionalPart.length() > 5) {
-                        timestampStr = parts[0] + "." + fractionalPart.substring(0, 5);
+                    if (!fractionalPart.isEmpty()) {
+                        timestampStr = parts[0];
                     }
                 }
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSS");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
                 LocalDateTime timestamp = LocalDateTime.parse(timestampStr, formatter);
 

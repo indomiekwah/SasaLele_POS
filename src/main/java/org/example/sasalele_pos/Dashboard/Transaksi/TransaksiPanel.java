@@ -107,6 +107,7 @@ public class TransaksiPanel extends JPanel {
         labelBelanja.setFont(new Font("Arial", Font.BOLD, 15));
         labelBelanja.setForeground(Color.BLACK);
         gbc.gridx = 0;
+        gbc.gridwidth = 1;
         rightBottomPanel.add(labelBelanja, gbc);
 
         JLabel totalBelanja = new JLabel("Rp. 0,00");
@@ -116,6 +117,7 @@ public class TransaksiPanel extends JPanel {
         totalBelanja.setFont(new Font("Arial", Font.BOLD, 15));
         totalBelanja.setForeground(Color.BLACK);
         gbc.gridx = 1;
+        gbc.gridwidth = 2;
         rightBottomPanel.add(totalBelanja, gbc);
 
         // Grid Y = 1
@@ -124,12 +126,14 @@ public class TransaksiPanel extends JPanel {
         uangLabel.setFont(new Font("Arial", Font.PLAIN, 15));
         uangLabel.setForeground(Color.BLACK);
         gbc.gridx = 0;
+        gbc.gridwidth = 1;
         rightBottomPanel.add(uangLabel, gbc);
 
         JTextField uangField = new JTextField(10);
         uangField.setFont(new Font("Arial", Font.PLAIN, 15));
         uangField.setForeground(Color.BLACK);
         gbc.gridx = 1;
+        gbc.gridwidth = 2;
         rightBottomPanel.add(uangField, gbc);
 
         // Grid Y = 2
@@ -142,7 +146,7 @@ public class TransaksiPanel extends JPanel {
             double kembalian = totalUang - hargaBelanja;
 
             if (hargaBelanja > totalUang) {
-                JOptionPane.showMessageDialog(null, "Uang pelanggan kurang: Rp. " + String.format("%,.2f", (hargaBelanja - totalUang)));
+                JOptionPane.showMessageDialog(null, "Uang pelanggan kurang: Rp. " + String.format("%,.0f", (hargaBelanja - totalUang)));
             } else {
                 TransactionService transactionService = new TransactionService();
                 try {
@@ -190,7 +194,7 @@ public class TransaksiPanel extends JPanel {
             newRow[0] = id;
             newRow[1] = product.getName();
             newRow[2] = String.valueOf(quantity);
-            newRow[3] = String.format("Rp. %,.2f", product.getPrice());
+            newRow[3] = String.format("Rp. %,.0f", product.getPrice());
             newRow[4] = "Action";
 
             DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
@@ -211,7 +215,7 @@ public class TransaksiPanel extends JPanel {
             data[i][0] = product.getId();                // Product ID
             data[i][1] = product.getName();              // Product Name
             data[i][2] = product.getProductType();       // Product Type (e.g., Perishable, Digital)
-            data[i][3] = String.format("Rp. %,.2f", product.getPrice()); // Product Price with formatting
+            data[i][3] = String.format("Rp. %,.0f", product.getPrice()); // Product Price with formatting
         }
 
         String[] leftTableColumns = {"Kode", "Nama Produk", "Tipe", "Harga"};
@@ -252,7 +256,7 @@ public class TransaksiPanel extends JPanel {
             }
         }
 
-        totalBelanja.setText(String.format("Rp. %,.2f", totalHarga));
+        totalBelanja.setText(String.format("Rp. %,.0f", totalHarga));
     }
 
     public static void refreshTable(JTable table) {
@@ -268,7 +272,7 @@ public class TransaksiPanel extends JPanel {
             data[i][0] = product.getId();                // Product ID
             data[i][1] = product.getName();              // Product Name
             data[i][2] = product.getProductType();       // Product Type (e.g., Perishable, Digital)
-            data[i][3] = String.format("Rp. %,.2f", product.getPrice()); // Product Price with formatting
+            data[i][3] = String.format("Rp. %,.0f", product.getPrice()); // Product Price with formatting
         }
 
         String[] leftTableColumns = {"Kode", "Nama Produk", "Tipe", "Harga"};

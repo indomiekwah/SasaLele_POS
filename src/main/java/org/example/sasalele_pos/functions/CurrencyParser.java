@@ -13,13 +13,14 @@ public class CurrencyParser {
         currencyString = currencyString.replace("Rp.", "").trim();
 
         // Step 2: Remove thousands separator (dot)
-        currencyString = currencyString.replace(".", "");
+        currencyString = currencyString.replace(",", "");
 
         // Step 3: Replace decimal separator (comma) with a dot
-        currencyString = currencyString.replace(",", ".");
+        currencyString = currencyString.replace(".", ",");
 
         // Step 4: Parse the cleaned-up string into a double
         try {
+            System.out.println(Double.parseDouble(currencyString));
             return Double.parseDouble(currencyString);
         } catch (NumberFormatException e) {
             System.err.println("Error: Invalid currency format: " + currencyString);
